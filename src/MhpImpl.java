@@ -16,7 +16,7 @@ public class MhpImpl {
         int o; // The simulated option that is discovered after your choice (o!=v && o!=c)
         int nc; // The option that is left after the first option is discovered
 
-        int ifYes = 0; // Number of victories if you change your decision after option is discovered
+        int ifYes = 0; // Number of victories if you changed your decision after option is discovered
         int ifNo = 0; // Number of victories if you did not change your decision after option was discovered
 
         long loopArgs;
