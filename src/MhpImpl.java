@@ -1,5 +1,6 @@
 import java.text.DecimalFormat;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.LongStream;
 
@@ -11,6 +12,7 @@ public class MhpImpl {
         final Random r = new Random();
         final DecimalFormat df = new DecimalFormat("0.00");
         long st = System.nanoTime();
+
 
         long ifYes[] = { 0 }; // Number of victories if you changed your decision after option is discovered
         long ifNo[] = { 0 }; // Number of victories if you did not change your decision after option was discovered
@@ -29,11 +31,11 @@ public class MhpImpl {
             int o; // The simulated option that is discovered after your choice (o!=v && o!=c)
             int nc; // The option that is left after the first option is discovered
 
-                        v = r.nextInt(3) + 1;
-                        c = r.nextInt(3) + 1;
+                        v = ThreadLocalRandom.current().nextInt(3) + 1;
+                        c = ThreadLocalRandom.current().nextInt(3) + 1;
 
                         if (v == c) {
-                            boolean randomDoor = r.nextBoolean();
+                            boolean randomDoor = ThreadLocalRandom.current().nextBoolean();
                             if (v == 1)
                                 o = randomDoor ? 2 : 3;
                             else if (v == 2)
