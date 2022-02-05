@@ -11,13 +11,14 @@ public class MhpImpl {
         final DecimalFormat df = new DecimalFormat("0.00");
         long st = System.nanoTime();
 
-        int v;
-        int c;
-        int o;
-        int nc;
+        int v; // The simulated choice that makes you win
+        int c; // The simulated users's choice
+        int o; // The simulated option that is discovered after your choice (o!=v && o!=c)
+        int nc; // The option that is left after the first option is discovered
 
-        int ifYes = 0;
-        int ifNo = 0;
+        int ifYes = 0; // Number of victories if you change your decision after option is discovered
+        int ifNo = 0; // Number of victories if you did not change your decision after option was discovered
+
         long loopArgs;
         try{
             loopArgs = Long.parseLong(args[0]);
