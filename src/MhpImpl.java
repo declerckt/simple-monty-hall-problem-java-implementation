@@ -1,25 +1,21 @@
 import java.text.DecimalFormat;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.LongStream;
 
 public class MhpImpl {
 
     public static void main(String[] args){
 
         final int DEFAULT_LOOP = 10000;
-        final Random r = new Random();
         final DecimalFormat df = new DecimalFormat("0.00");
         long st = System.nanoTime();
 
-        int v; // The simulated choice that makes you win
-        int c; // The simulated users's choice
-        int o; // The simulated option that is discovered after your choice (o!=v && o!=c)
-        int nc; // The option that is left after the first option is discovered
-
-        int ifYes = 0; // Number of victories if you changed your decision after option is discovered
-        int ifNo = 0; // Number of victories if you did not change your decision after option was discovered
+        long ifYes[] = { 0 }; // Number of victories if you changed your decision after option is discovered
+        long ifNo[] = { 0 }; // Number of victories if you did not change your decision after option was discovered
 
         long loopArgs;
+
         try{
             loopArgs = Long.parseLong(args[0]);
         }catch(NumberFormatException | ArrayIndexOutOfBoundsException e){
@@ -27,14 +23,18 @@ public class MhpImpl {
         }
 
         final long nbLoop = (loopArgs == -1) ? DEFAULT_LOOP : loopArgs;
+        
+        LongStream.range(0,nbLoop).parallel().forEach(i-> {
 
-        for(long i = 0; i<nbLoop ; i++) {
-
-            v = r.nextInt(3) + 1;
-            c = r.nextInt(3) + 1;
+            int v; // The simulated choice that makes you win
+            int c; // The simulated users's choice
+            int o; // The simulated option that is discovered after your choice (o!=v && o!=c)
+            int nc; // The option that is left after the first option is discovered
+            v = ThreadLocalRandom.current().nextInt(3) + 1;
+            c = ThreadLocalRandom.current().nextInt(3) + 1;
 
             if (v == c) {
-                boolean randomDoor = r.nextBoolean();
+                boolean randomDoor = ThreadLocalRandom.current().nextBoolean();
                 if (v == 1)
                     o = randomDoor ? 2 : 3;
                 else if (v == 2)
@@ -44,9 +44,8 @@ public class MhpImpl {
             } else {
                 if ((v + c) == 3)
                     o = 3;
-                else {
+                else
                     o = Math.abs(v - c);
-                }
             }
 
             nc = 6 - o - c;
@@ -55,18 +54,19 @@ public class MhpImpl {
                 System.out.println("o==v");
 
             if (nc == v)
-                ifYes++;
+               ifYes[0]++;
             else if (c == v)
-                ifNo++;
-        }
+                ifNo[0]++;
+        });
 
         System.out.println("");
         System.out.println(" --- Little MONTY HALL PROBLEM implementation ---");
         System.out.println("");
         System.out.println("Number of victories depending on whether you decide to change your choice or not (based on " + nbLoop + " tries) : ");
-        System.out.println("If you changed your choice : " + ifYes + " (" + (df.format((long) (ifYes*100.0)/nbLoop)) + "%)");
-        System.out.println("If you kept your choice : " + ifNo + " (" + (df.format((long) (ifNo*100.0)/nbLoop)) + "%)");
+        System.out.println("If you changed your choice : " + ifYes[0] + " (" + (df.format((long) (ifYes[0]*100.0)/nbLoop)) + "%)");
+        System.out.println("If you kept your choice : " + ifNo[0] + " (" + (df.format((long) (ifNo[0]*100.0)/nbLoop)) + "%)");
         System.out.println("Execution time : " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - st) + "ms");
+        System.out.println("Available cores : " + Runtime.getRuntime().availableProcessors());
 
     }
 }
